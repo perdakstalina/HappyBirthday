@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Киберпанк 22.0 - Илье</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            font-family: 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .cyber-loader {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeOut 2s 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; display: none; }
+        }
+
+        .cyber-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            transform-style: preserve-3d;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .photo-container {
+            position: relative;
+            transform: translateZ(50px);
+            transition: 1s;
+            border: 2px solid #0ff;
+            box-shadow: 0 0 15px #0ff;
+            background: rgba(0, 0, 0, 0.8);
+            padding-bottom: 120px;
+        }
+
+        .photo-container:hover {
+            transform: translateZ(100px) rotateY(15deg);
+            z-index: 100;
+            box-shadow: 0 0 30px #0ff;
+        }
+
+        .cyber-photo {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(120%);
+            transition: 1s;
+        }
+
+        .photo-container:hover .cyber-photo {
+            filter: none;
+        }
+
+        .neon-caption {
+            position: absolute;
+            bottom: 90px;
+            background: linear-gradient(45deg, #000, #0ff);
+            width: 100%;
+            padding: 0.8rem;
+            color: #fff;
+            clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 100%);
+            text-align: center;
+            font-size: 1rem;
+            text-shadow: 0 0 10px #0ff;
+            line-height: 1.2;
+            z-index: 2;
+        }
+
+        .photo-message {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            min-height: 50px;
+            padding: 0.8rem;
+            background: linear-gradient(45deg, #000, #f0f);
+            color: #fff;
+            font-size: 0.85rem;
+            text-align: center;
+            text-shadow: 0 0 10px #f0f;
+            overflow-wrap: break-word;
+            line-height: 1.3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .cyber-title {
+            font-size: 4rem;
+            text-align: center;
+            margin: 2rem;
+            background: linear-gradient(45deg, #0ff, #f0f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .greeting-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            perspective: 1000px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hologram-text {
+            font-size: 3rem;
+            animation: hologram 3s infinite;
+            text-align: center;
+            padding: 2rem;
+            border: 3px solid #0ff;
+            transform: rotateX(25deg);
+            color: #0ff;
+            text-shadow: 0 0 20px #0ff;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        @keyframes hologram {
+            0%, 100% { text-shadow: 0 0 10px #0ff, 0 0 20px #0ff; }
+            50% { text-shadow: 0 0 30px #f0f, 0 0 40px #f0f; }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .greeting-message {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .activate-button {
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            margin-top: 20px;
+            background: #0ff;
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .activate-button:hover {
+            background: #f0f;
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-loader">
+        <div class="hologram-text">ИНИЦИАЛИЗАЦИЯ СИСТЕМЫ...</div>
+    </div>
+
+    <canvas class="matrix-bg"></canvas>
+    <canvas class="particles"></canvas>
+
+    <h1 class="cyber-title">ИЛЬЯ 22.0 Ну что, вот и стукнуло моему любимому ишаку 22 года. Я понимаю, что ты уже старый и много не помнишь, но давай постараемся вспомнить угарные и душевные события из жизни!</h1>
+
+    <section class="cyber-grid" id="gallery"></section>
+
+    <section class="greeting-section">
+        <div class="hologram-text" id="greeting-text"></div>
+        <button class="activate-button" onclick="activateGreeting()">Активировать поздравление</button>
+        <div class="greeting-message" id="greeting-message">
+            Дорогой Илья!<br><br>
+            Вот и наступил твой 22-й день рождения, и я не могу не удивляться, как быстро летит время! Я помню, как мы с тобой и Бурманом дурачились в школьном лагере, как гуляли на море, как впервые обстреливали окна, взрывали петарды и убегали от ментов. Помню, как мы начали вместе ходить в школу, заниматься на турниках, часто гулять и многое другое. А теперь мы взрослеем и все меняется — мы стали теми, кто ездит в разные города к друг другу, встречается и гуляет с нашими половинками. Мы знаем друг друга всю жизнь, но впереди у нас еще столько всего!<br><br>
+            Теперь мы вместе планируем путешествия, катаемся на машине, покоряем новые высоты и двигаемся вперед по карьерной лестнице. Ты даже не представляешь, как я рад, что мы прошли этот путь, что мы можем доверять друг другу абсолютно все, и ни что нас не рассорит. Мы всегда будем стоять плечом к плечу, ведь мы настоящие братья. Как ты сказал когда-то: «Брат родной, от мамы другой!» — и это правда, роднее тебя для меня нет никого.<br><br>
+            Я благодарен тебе, что ты есть в моей жизни, что ты такой невероятный человек. Для меня это невероятно важно и дорого. Я уверен, что мы можем стать самыми успешными людьми, что наши с тобой приключения выйдут на новый уровень. Вместе с нашими любимыми супругами мы будем путешествовать по всему миру, наполняя жизни яркими эмоциями и незабываемыми воспоминаниями.<br><br>
+            Этот год в наших с тобой жизнях был полон событий, но ты всегда был рядом, никогда не отвернулся и всегда поддерживал. Ты — мой старший брат, родной человек и родная душа. Спасибо, что всегда поддерживаешь меня!<br><br>
+            В этот новый год твоей жизни, я хочу пожелать тебе только самых ярких эмоций. Пусть твоя карьера выходит на новый уровень, пусть будет много финансовых успехов, чтобы у тебя с Олей все складывалось замечательно, а ваша свадьба стала началом нового, удивительного союза, наполненного любовью и поддержкой. Пусть ваше счастье длится вечно, а вы дарите друг другу только самые яркие моменты!<br><br>
+            Не забываем и про здоровье — желаю тебе крепких нервов, чтобы было как можно меньше поводов для волнений, а иммунитет был таким же железным, как твоя решимость. Пусть в новой главе твоей жизни будет много ярких путешествий и побед, сколько бы ты ни пожелал. Я уверен, они будут, потому что более целеустремленного человека, чем ты, я не знаю и, наверное, не встречу. Ты как тот герой из песни: «Он так прекрасен, как Иисус, произведение всех чувств…»<br><br>
+            Дружище, поздравляю тебя с 22-летием! Ты — самый крутой, и всегда знай это. У меня для тебя есть подарок, который находится на пункте выдачи в Симферополе. Напиши мне фразу QR, и я пришлю тебе код. Этот подарок сделает из тебя настоящего джентльмена и самого крутого парня на свете!<br><br>
+            С любовью и НЕ уважением Алёша❤️
+        </div>
+    </section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    function activateGreeting() {
+        const greetingMessage = document.getElementById('greeting-message');
+        greetingMessage.style.display = 'block';
+    }
+    // Matrix Background
+    const matrixCanvas = document.querySelector('.matrix-bg');
+    const ctx = matrixCanvas.getContext('2d');
+    matrixCanvas.width = window.innerWidth;
+    matrixCanvas.height = window.innerHeight;
+
+    const chars = '01';
+    const fontSize = 14;
+    const columns = matrixCanvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function drawMatrix() {
+        ctx.fillStyle = 'rgba(0,0,0,0.05)';
+        ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+        ctx.fillStyle = '#0F0';
+        ctx.font = fontSize + 'px monospace';
+
+        drops.forEach((drop, i) => {
+            const text = chars[Math.floor(Math.random() * chars.length)];
+            ctx.fillText(text, i * fontSize, drop * fontSize);
+            if (drop * fontSize > matrixCanvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        });
+    }
+
+    // 3D Particles
+    const particleCanvas = document.querySelector('.particles');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: particleCanvas, alpha: true });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    
+    const particles = new THREE.BufferGeometry();
+    const posArray = new Float32Array(5000 * 3);
+    for (let i = 0; i < 5000 * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 10;
+    }
+    particles.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const material = new THREE.PointsMaterial({
+        size: 0.01,
+        color: '#0ff'
+    });
+    const particleMesh = new THREE.Points(particles, material);
+    scene.add(particleMesh);
+    camera.position.z = 5;
+
+    // Фото-галерея
+    const gallery = document.getElementById('gallery');
+    const captions = [
+        "Наш первый проект!", "Ты настоящий киборг!", "Убощица лысая", "Шашлык от шефа",
+        "Танкист!", "Любовь!", "Актёр!", "Chill gay, ой то есть guy!",
+        "Дуэт!", "Спокойствие!", "Отрыв печени!", "Теперь точно гей!",
+        "Три дебила это сила!", "Один в поле воин!", "Гачи тим!", "Насрал!",
+        "Таврида!", "Повышение!", "Мерзость!", "Илья — король!"
+    ];
+    const messages = [
+        "Помню как мы продумывали наши видосики, первая прибыль, хорошие времена были!", 
+        "Помню как ты прискокал с одной ногой, жёг покрышки, настоящий воин света!", 
+        "А ведь я помню как ты начинал свою карьеру, помню как ты был убощицей и сантехником!", 
+        "Дальше по карьерной лестницы ты стал шефом, правда когда ты готовишься никогда не понятно где еда и кого будут резать...", 
+        "Помню как ты был танкистом, а любимая твоя фраза была: ООО ДАААА, есть пробииитииее💦!", 
+        "Помню как после танков, ты решил стать счастливым человеком и обрёл свою любовь!", 
+        "Помню как ты решил уйти в кино и стать Ридиком!", 
+        "Помню как мы ездили и наслаждались затупами Серёжки!", 
+        "Помню как кайфово прошёл наш новый год!", 
+        "Помню как ты пошёл на самое смелое дело своей жизни и стал женатиком!", 
+        "Помню как мы в новый год были унижены нашими любимыми дамами👠!", 
+        "Помню как всё таки ты решился, опробовать молодое свежее, рельефное тело гуммоноида🥰", 
+        "Помню как ты какал там и кайфовал, а друзья твои стебали, разве это не счастье?!?", 
+        "Помню как ты сталкивался с разными проблемами, но всегда их решал, ты настоящий мужик!(?)", 
+        "Помню эти весёлые времена на гидранте, где есть ты и голые жопы рядом!", 
+        "Помню как ты однажды насрал так, что туалет аж сам обосрался от страха!", 
+        "Помню как ты эксплуатировал маленького ребёночка, нарушал законы и стал настоящим вором, алкашом, ну либо просто Ильёй!", 
+        "Помню как тебя повысили, до начальника 228 мотострелковой танковой вдв морской котик пехота мор флота дивизии!", 
+        "Помню, когда мы гуляли, а ко мне спрашивали, а что это за уродливая цирковая собачка рядом с вами, а я им гордо отвечал, это Илюшка!", 
+        "Илья, ты просто король этого света!"
+    ];
+    for (let i = 1; i <= 20; i++) {
+        const photoDiv = document.createElement('div');
+        photoDiv.className = 'photo-container';
+        photoDiv.innerHTML = `
+            <img src="${i}.jpg" class="cyber-photo" alt="Memory ${i}">
+            <div class="neon-caption">${captions[i - 1]}</div>
+            <div class="photo-message">${messages[i - 1]}</div>
+        `;
+        gallery.appendChild(photoDiv);
+    }
+
+    // Поздравление с чередованием сообщений
+    const greetings = [
+        "ИЛЬЯ. СИСТЕМА ОБНАРУЖИЛА НОВУЮ ВЕРСИЮ - 22.0",
+        "ЗАГРУЗКА ВОСПОМИНАНИЙ... УСПЕШНО",
+        "АНАЛИЗ ДОСТИЖЕНИЙ... ПОРАЗИТЕЛЬНО",
+        "ПРОГНОЗ НА БУДУЩЕЕ... ГРАНДИОЗНО",
+        "АКТИВАЦИЯ ПОЗДРАВЛЕНИЯ... ГОТОВО"
+    ];
+    let currentGreeting = 0;
+    const greetingElement = document.getElementById('greeting-text');
+    let greetingInterval = setInterval(updateGreeting, 3000);
+
+    function updateGreeting() {
+        greetingElement.textContent = greetings[currentGreeting];
+        currentGreeting = (currentGreeting + 1) % greetings.length;
+    }
+
+    // Анимации
+    function animate() {
+        requestAnimationFrame(animate);
+        drawMatrix();
+        particleMesh.rotation.x += 0.001;
+        particleMesh.rotation.y += 0.002;
+        renderer.render(scene, camera);
+    }
+
+    // Инициализация
+    window.addEventListener('load', () => {
+        animate();
+        setTimeout(() => {
+            document.querySelector('.cyber-loader').remove();
+        }, 4000);
+    });
+
+    window.addEventListener('resize', () => {
+        matrixCanvas.width = window.innerWidth;
+        matrixCanvas.height = window.innerHeight;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>
+</body>
+</html>
